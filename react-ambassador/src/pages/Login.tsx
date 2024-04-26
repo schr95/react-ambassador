@@ -14,21 +14,21 @@ const Login = () => {
     const [isSigningIn, setIsSigningIn] = useState(false)
     const [error, setErrorMessage] = useState('')
     const [redirect, setRedirect] = useState(false);
+    const [token,setToken] =useState('');
 
     const submit = async (e: SyntheticEvent) => {
         e.preventDefault()
         try{
         if(!isSigningIn) {
             setIsSigningIn(true)
-            await doSignInWithEmailAndPassword(email, password)
-            await axios.post('login', {
-                email,
-                password
-            });
+           const userCredential = await doSignInWithEmailAndPassword(email, password);
+            const token = await userCredential.user.getIdToken();
+            await axios.get('protected', {headers:  
+                { authorization: `Bearer ${token}` }});
             setRedirect(true);
         }
         }catch(error:any){
-        setErrorMessage(error.message);
+            setErrorMessage(error.message);
          }
     }
 
